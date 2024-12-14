@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, redirect, url_for, session, flash, json,make_response
+from flask import Blueprint, render_template, request, redirect, url_for, session, flash, make_response
 from models.model import *
 
 
@@ -12,7 +12,6 @@ def before_request():
 def after_request(response):
     response.set_cookie('visited', 'true')
     return response
-
 
 @prato_controllers.route("/")
 def index():
@@ -74,7 +73,7 @@ def user():
     total_carrinho = sum(prato.preco for prato in pratos_no_carrinho)
     
     # Renderizar o template com os pratos do carrinho e o total
-    return render_template("user.html", listaPratos=pratos_no_carrinho, total=total_carrinho)
+    return render_template("user.html", listaPratos=pratos_no_carrinho, total=total_carrinho, carrinho=carrinho_ids)
 # Definindo a lista de funcionários
 funcionarios = [
     {"id": 1, "nome": "Giovanna", "cargo": "Gerente"},
@@ -90,7 +89,6 @@ def listar_funcionarios():
 
 @prato_controllers.route("/admin/funcionarios/adicionar", methods=["POST"])
 def adicionar_funcionario():
-    # Rota para adicionar um funcionário
     global funcionarios
     novo_funcionario = {
         "id": len(funcionarios) + 1,
