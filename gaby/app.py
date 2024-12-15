@@ -43,8 +43,7 @@ def inserir_dados_iniciais_prato():
 inserir_dados_iniciais_prato()
 #insere dados automaticamente quando a aplicação é iniciada
 
-# Dados iniciais dos funcionários
-funcionarios_iniciais = [
+funcionarios_iniciais = [#funcionarios pré-adicionados no banco de dados
     {"id": 1, "nome": "Giovanna", "cargo": "Gerente", "email": "giovanna@empresa.com", "cpf": "12345678901", "senha": "123", "salario": 5000.00},
     {"id": 2, "nome": "Gaby", "cargo": "Programador", "email": "gaby@empresa.com", "cpf": "98765432100", "senha": "456", "salario": 8500.00},
     {"id": 3, "nome": "Rafael", "cargo": "Programador", "email": "rafael@empresa.com", "cpf": "11223344556", "senha": "789", "salario": 3500.00},
@@ -52,7 +51,7 @@ funcionarios_iniciais = [
 ]
 
 def inserir_dados_iniciais_func():
-    # Insere os dados no banco de dados
+    #insere os dados no banco de dados
     for funcionario in funcionarios_iniciais:
         #percorre os funcionarios
         if not Funcionario.query.filter_by(id=funcionario["id"]).first():
