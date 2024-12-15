@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fogo & Brasa</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    
+    <header class="header">
+        <a href="#" class="logo"> <i class="fas fa-drumstick-bite"></i>Fogo & Brasa</a>
+        <nav class="navbar">
+            <a href="{{ url_for('prato.index') }}">Home</a>
+            <a href="#">sobre</a>
+            <a href="{{ url_for('prato.login') }}">Login</a>
+            <a href="{{ url_for('prato.index') }}">Menu</a>
+        </nav>
+        <div id="menu" class="fas fa-bars"></div>
+    </header>
+      <section class="about">
+
+        <div class="image">
+            <img src="{{ url_for('static', filename='images/sobre.jpg') }}" alt="">
+        </div>
+
+        <div class="content">
+            <h3> bem vindo ao restaurante! </h3>
+            <p>O Fogo & Brasa é um restaurante moderno que se destaca pela seleção de carnes premium. Oferecendo uma experiência gastronômica única, espaço iluminado, acolhedor e descontraído</p>
+            <p>Localizado na Avenida Paulista 1106, São Paulo.</p>
+            <div class="icons-container">
+                <div class="icons">
+                    <i class="fas fa-utensils"></i>
+                    <span>comidas</span>
+                </div>
+                <div class="icons">
+                    <i class="fas fa-glass-martini"></i>
+                    <span>drinks</span>
+                </div>
+                <div class="icons">
+                    <i class="fas fa-ice-cream"></i>
+                    <span>sobremesas</span>
+                </div>
+            </div>
+        </div>
+        <section class="gallery">
+
+            <h1 class="heading"> galeria </h1>
+    
+            <div class="box-container">
+    
+                <div class="box">
+                    <img src="{{ url_for('static', filename='images/foto1.jpg') }}" alt="">
+                </div>
+    
+                <div class="box">
+                    <img src="{{ url_for('static', filename='images/foto3.jpg') }}" alt="">
+                </div>
+    
+                <div class="box">
+                    <img src="{{ url_for('static', filename='images/foto6.jpg') }}" alt="">
+                </div>
+    
+                <div class="box">
+                    <img src="{{ url_for('static', filename='images/gallery9.jpg') }}" alt="">
+                </div>
+    
+                <div class="box">
+                    <img src="{{ url_for('static', filename='images/foto4.jpg') }}" alt="">
+                </div>
+    
+                <div class="box">
+                    <img src="{{ url_for('static', filename='images/foto5.jpg') }}" alt="">
+                </div>
+    
+                <div class="box">
+                    <img src="{{ url_for('static', filename='images/footo9.jpg') }}" alt="">
+                </div>
+    
+                <div class="box">
+                    <img src="{{ url_for('static', filename='images/foto10.jpg') }}" alt="">
+                </div>
+    
+                <div class="box">
+                    <img src="{{ url_for('static', filename='images/foto8.jpg') }}" alt="">
+                </div>
+    
+            </div>
+    
+        </section>
+    </section>
+    <section class="footer">
+
+        <div class="box-container">
+
+            <div class="box">
+                <h3>links</h3>
+                <a href="#menu" class="active">home</a>
+                <a href="#sobre.html">sobre</a>
+                <a href="{{ url_for('prato.login') }}">Login</a>
+                <a href="{{ url_for('prato.index') }}">Menu</a>
+            </div>
+    
+            <div class="box">
+                <h3>Siga nas redes</h3>
+                <a href="#"> <i class="fab fa-facebook-f"></i> facebook</a>
+                <a href="#"> <i class="fab fa-twitter"></i> twitter</a>
+                <a href="#"> <i class="fab fa-instagram"></i> instagram</a>
+                <a href="#"> <i class="fab fa-linkedin"></i> linkedin</a>
+                <a href="#"> <i class="fab fa-pinterest"></i> pinterest</a>
+            </div>
+
+            <div class="box">
+                <h3>Contato</h3>
+                <p>se inscreva</p>
+                <form action="">
+                    <input type="email" placeholder="e-mail">
+                    <input type="submit" value="inscreva-se" class="btn">
+                </form>
+            </div>
+
+        </div>
+
+    </section>
+</body>
+</html>

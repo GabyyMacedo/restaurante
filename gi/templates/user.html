@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carrinho de Compras</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<header class="header">
+    <a href="#" class="logo"> <i class="fas fa-drumstick-bite"></i>Fogo & Brasa</a>
+    <nav class="navbar">
+        <a href="{{ url_for('prato.index') }}">Home</a>
+        <a href="about.html">sobre</a>
+        <a href="{{ url_for('prato.logout') }}">Logout</a>
+        <a href="{{ url_for('prato.index') }}">Menu</a>
+    </nav>
+    <div id="menu" class="fas fa-bars"></div>
+</header>
+<body>
+    <section class="home-menu">
+        <h3 class="heading">Carrinho</h3>
+        <div class="box-container">
+        {% if listaPratos %}
+            {% for prato in listaPratos %}
+                <div class="box">
+                    <div class="image">
+                        <img src="{{ url_for('static', filename='images/' + prato.imagem) }}" alt="{{ prato.nome }}">
+                    </div>
+                    <div class="content">
+                        <h3>{{ prato.nome }}</h3>
+                        <div class="price">R$ {{ prato.preco }}</div>
+                    </div> 
+                </div>
+            {% endfor %}
+            <h2>Total: R$ {{ total }}</h2>
+        {% else %}
+            <p>Seu carrinho está vazio!</p>
+        {% endif %}
+        </div>
+    </section>
+
+</body>
+</html>
