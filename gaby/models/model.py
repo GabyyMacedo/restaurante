@@ -1,4 +1,4 @@
-from db import db
+from db import db #importa o db (banco de dados) do db.py
 
 class Funcionario(db.Model):
     id = db.Column(db.Integer, primary_key=True) 
