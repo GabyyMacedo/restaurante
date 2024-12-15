@@ -1,20 +1,28 @@
 from dao.FuncionarioDao import FuncionarioDAO
+#importa FuncionarioDAO de Funcionario.py
 
 class FuncionarioRepository:
+#classe que vai facilitar a ligaação entre o banco de dados e a utilização das funções
     def __init__(self) -> None:
         self.funcionarioDao = FuncionarioDAO()
+        #inicializa funcionarioDAO
 
-    def get_all_funcionario(self):
-        return self.funcionarioDao.get_all_funcionarios()
+    def listar_funcionario(self):
+    #chama o metodo listar_funcionario e retorna os dados
+        return self.funcionarioDao.listar_funcionarios()
 
-    def get_funcionario_by_id(self, funcionario_id):
-        return self.funcionarioDao.get_funcionario_by_id(funcionario_id)
+    def get_funcionario(self, id):
+    #chama o metodo get_funcionario, passa o id requerido e retorna
+        return self.funcionarioDao.get_funcionario(id)
 
-    def create_funcionario(self, name, email):
-        return self.funcionarioDao.create_funcionario(name, email)
+    def create_funcionario(self, id, nome, cpf, cargo, salario):
+    #chama o metodo add_funcionario e passa os dados requeridos e retorna
+        return self.funcionarioDao.add_funcionario(id, nome, cpf, cargo, salario)
 
-    def update_funcionario(self, funcionario_id, name, email):
-        return self.funcionarioDao.update_funcionario(funcionario_id, name, email)
+    def update_funcionario(self,id, nome, cpf, cargo, salario):
+    #chama o metodo att_funcionario e passa os dados requeridos e retorna
+        return self.funcionarioDao.att_funcionario(id, nome, cpf, cargo, salario)
 
-    def delete_funcionario(self, funcionario_id):
-        return self.funcionarioDao.delete_funcionario(funcionario_id)
+    def delete_funcionario(self, id):
+    #chama o metodo del_funcionario e passa os dados requeridos e retorna
+        return self.funcionarioDao.del_funcionario(id)
