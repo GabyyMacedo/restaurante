@@ -1,4 +1,4 @@
-from database import db
+from db import db
 from models.model import Funcionario
 
 class FuncionarioDAO:
