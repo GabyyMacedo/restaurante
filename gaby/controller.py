@@ -29,8 +29,7 @@ def index():
         else:
             cookie.append(id)
 
-    #busca todos os pratos no banco de dados
-    pratos = Prato.query.all()
+    pratos = Prato.query.all() #busca todos os pratos no banco de dados
 
     #mostra a página com a lista de pratos e o carrinho
     resp = make_response(render_template("index.html", 
@@ -81,12 +80,15 @@ def user():
 
 @prato_controllers.route("/admin")
 def listar_funcionarios():
-    funcionarios = Funcionario.query.all()  #busca todos os funcionários no banco de dados
+#lista todos os funcionarios
+    funcionarios = Funcionario.query.all()
+    #busca todos os funcionários no banco de dados
     return render_template("admin.html", funcionarios=funcionarios)
 
 
 @prato_controllers.route("/admin/funcionarios/adicionar", methods=["POST"])
 def adicionar_funcionario():
+#adiciona um funcionario com os seguintes dados adquiridos pelo html
     nome = request.form.get("nome")
     cargo = request.form.get("cargo")
     email = request.form.get("email")
@@ -100,7 +102,7 @@ def adicionar_funcionario():
         return redirect(url_for("prato.listar_funcionarios"))
 
     novo_funcionario = Funcionario(
-    #cria o novo funcionário e adiciona no banco de dados
+    #se não existir nenhum funcionario com os mesmos dados, cria o novo funcionário e adiciona no banco de dados
         nome=nome,
         cargo=cargo,
         email=email,
@@ -108,25 +110,29 @@ def adicionar_funcionario():
         senha=senha,
         salario=salario
     )
-    db.session.add(novo_funcionario) 
-    db.session.commit()
+    db.session.add(novo_funcionario) #adiciona o novo funcionario
+    db.session.commit() #"confirma" a operação
 
     flash("Funcionário adicionado com sucesso!", "success")
     return redirect(url_for("prato.listar_funcionarios"))
 
 @prato_controllers.route("/admin/funcionarios/remover/<int:id>", methods=["POST"])
 def remover_funcionario(id):
+#remove funcionario pelo id
     funcionario = Funcionario.query.get(id) #pega pelo id
     if funcionario:
+    #se achar o funcionário, exclui ele
         db.session.delete(funcionario)
         db.session.commit()
         flash("Funcionário removido com sucesso!", "success")
     else:
+    #se não, mostra essa mensagem
         flash("Funcionário não encontrado.", "danger")
     return redirect(url_for("prato.listar_funcionarios"))
 
 @prato_controllers.route("/admin/pratos/adicionar", methods=["POST"])
 def adicionar_prato():
+#adiciona um prato com os seguintes dados adquiridos pelo html
     nome = request.form.get("nome")
     descricao = request.form.get("descricao")
     preco = float(request.form.get("preco"))
@@ -138,26 +144,29 @@ def adicionar_prato():
         return redirect(url_for("prato.index"))
 
     novo_prato = Prato(
-    #cria o novo prato e adiciona no banco de dados
+    #se não existir nenhum prato com os mesmos dados, cria o novo prato e adiciona no banco de dados
         nome=nome,
         descricao=descricao,
         preco=preco,
         imagem=imagem
     )
-    db.session.add(novo_prato)
-    db.session.commit()
+    db.session.add(novo_prato) #adiciona o novo prato
+    db.session.commit() #confirma a operação
 
     flash("Prato adicionado com sucesso!", "success")
     return redirect(url_for("prato.index"))
 
 @prato_controllers.route("/admin/pratos/remover/<int:id>", methods=["POST"])
-def remover_prato(id): #pega pelo id
-    prato = Prato.query.get(id)
+def remover_prato(id): 
+#remove funcionario pelo id
+    prato = Prato.query.get(id) #pega pelo id
     if prato:
+    #se encontrar, exclui
         db.session.delete(prato)
         db.session.commit()
         flash("Prato removido com sucesso!", "success")
     else:
+    #se não, mostra essa mensagem
         flash("Prato não encontrado.", "danger")
     return redirect(url_for("prato.index"))
 
