@@ -1,4 +1,4 @@
-from database import db
+from db import db
 
 class Funcionario(db.Model):
     id = db.Column(db.Integer, primary_key=True) 
