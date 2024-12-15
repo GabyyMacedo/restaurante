@@ -1,5 +1,5 @@
 from flask import Flask
-from database import init_db
+from flask_sqlalchemy import SQLAlchemy
 from repository.PratoRepository import PratoRepository
 from repository.FuncionarioRepository import FuncionarioRepository
 from controller import prato_controllers
@@ -12,6 +12,11 @@ app.register_blueprint(prato_controllers)
 pratoRepository=PratoRepository()
 funcionarioRepository = FuncionarioRepository()
 app.secret_key = 'sua_chave_secreta_aqui' 
+
+db = SQLAlchemy()
+
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'  # Exemplo usando SQLite
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 pratos_iniciais = [ #pratos pré-adicionados no banco de dados
     {"id": 1, "nome": "Carne Argentina", "descricao": "Prato suculento e macio, preparado com cortes selecionados e temperos especiais, para uma experiência saborosa e intensa.", "preco": 89.00, "imagem": "gallery5.jpg"},
@@ -30,20 +35,23 @@ pratos_iniciais = [ #pratos pré-adicionados no banco de dados
 
 def inserir_dados_iniciais_prato():
 #insere os dados no banco de dados
-    for prato in pratos_iniciais:
-    #percorre os pratos
-        if not Prato.query.filter_by(id=prato["id"]).first():  
-            #verifica se ja existe um prato com o mesmo id
-            novo_prato = Prato(id=prato["id"], nome=prato["nome"], descricao=prato["descricao"], preco=prato["preco"], imagem=prato["imagem"])
-            #cria um novo prato com os dados pré-fornecidos
-            db.session.add(novo_prato)
-            #add o prato no banco de dados
-    db.session.commit() #confirma a operação
+    with app.app_context():  
+        db.create_all()
+        for prato in pratos_iniciais:
+        #percorre os pratos
+            if not Prato.query.filter_by(id=prato["id"]).first():  
+                #verifica se ja existe um prato com o mesmo id
+                novo_prato = Prato(id=prato["id"], nome=prato["nome"], descricao=prato["descricao"], preco=prato["preco"], imagem=prato["imagem"])
+                #cria um novo prato com os dados pré-fornecidos
+                db.session.add(novo_prato)
+                #add o prato no banco de dados
+        db.session.commit() #confirma a operação
 
 inserir_dados_iniciais_prato()
 #insere dados automaticamente quando a aplicação é iniciada
 
-funcionarios_iniciais = [#funcionarios pré-adicionados no banco de dados
+# Dados iniciais dos funcionários
+funcionarios_iniciais = [
     {"id": 1, "nome": "Giovanna", "cargo": "Gerente", "email": "giovanna@empresa.com", "cpf": "12345678901", "senha": "123", "salario": 5000.00},
     {"id": 2, "nome": "Gaby", "cargo": "Programador", "email": "gaby@empresa.com", "cpf": "98765432100", "senha": "456", "salario": 8500.00},
     {"id": 3, "nome": "Rafael", "cargo": "Programador", "email": "rafael@empresa.com", "cpf": "11223344556", "senha": "789", "salario": 3500.00},
@@ -51,29 +59,30 @@ funcionarios_iniciais = [#funcionarios pré-adicionados no banco de dados
 ]
 
 def inserir_dados_iniciais_func():
-    #insere os dados no banco de dados
-    for funcionario in funcionarios_iniciais:
-        #percorre os funcionarios
-        if not Funcionario.query.filter_by(id=funcionario["id"]).first():
-            #verifica se ja existe um prato com o mesmo id
-            novo_funcionario = Funcionario(
-            #cria um novo prato com os dados pré-fornecidos
-                id=funcionario["id"],
-                nome=funcionario["nome"],
-                cargo=funcionario["cargo"],
-                email=funcionario["email"],
-                cpf=funcionario["cpf"],
-                senha=funcionario["senha"],  
-                salario=funcionario["salario"]
-            )
-            db.session.add(novo_funcionario)
-            #add o funcionario no banco de dados
-    db.session.commit() # Confirma a operação
+    # Insere os dados no banco de 
+    with app.app_context():  
+        db.create_all()
+        for funcionario in funcionarios_iniciais:
+            #percorre os funcionarios
+            if not Funcionario.query.filter_by(id=funcionario["id"]).first():
+                #verifica se ja existe um prato com o mesmo id
+                novo_funcionario = Funcionario(
+                #cria um novo prato com os dados pré-fornecidos
+                    id=funcionario["id"],
+                    nome=funcionario["nome"],
+                    cargo=funcionario["cargo"],
+                    email=funcionario["email"],
+                    cpf=funcionario["cpf"],
+                    senha=funcionario["senha"],  
+                    salario=funcionario["salario"]
+                )
+                db.session.add(novo_funcionario)
+                #add o funcionario no banco de dados
+        db.session.commit() # Confirma a operação
 
 
 inserir_dados_iniciais_func()
 #insere dados automaticamente quando a aplicação é iniciada
 
 if __name__ == "__main__":
-    init_db(app)
     app.run(debug=True)
