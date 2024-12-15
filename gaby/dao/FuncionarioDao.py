@@ -1,5 +1,5 @@
-from db import db
-from models.model import Funcionario
+from db import db #importa o db (banco de dados) do db.py
+from models.model import Funcionario #importa Funcionario do model.py
 
 class FuncionarioDAO:
     @staticmethod
@@ -13,22 +13,21 @@ class FuncionarioDAO:
          #retorna todos os funcionarios cadastrados
 
     @staticmethod
-    def add_funcionario(id, nome, email, cpf, cargo, salario):
+    def add_funcionario(id, nome, cpf, cargo, salario):
         #adiciona um novo funcionario
-        funcionario = Funcionario(id=id, nome=nome, email=email,cpf=cpf,cargo=cargo,salario=salario)
+        funcionario = Funcionario(id=id, nome=nome,cpf=cpf,cargo=cargo,salario=salario)
         #cria um novo item na classe Funcionario com os parametros passados
         db.session.add(funcionario) #adiciona no banco de dados
         db.session.commit() #"confirma" a operação
         return funcionario #retorna o funcionario que acabou de ser criado
 
     @staticmethod
-    def att_funcionario(id, nome, email, cpf, cargo, salario):
+    def att_funcionario(id, nome, cpf, cargo, salario):
     #atualiza as informações de um funcionario
         funcionario = FuncionarioDAO.get_funcionario(id) #busca o funcionario pelo id
         if funcionario: #se o funcionario for encontrado atualiza as informações:
             funcionario.id=id
             funcionario.nome = nome
-            funcionario.email = email
             funcionario.cpf=cpf
             funcionario.cargo=cargo
             funcionario.salario=salario
