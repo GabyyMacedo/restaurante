@@ -1,22 +1,22 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
-from repository.PratoRepository import PratoRepository
-from repository.FuncionarioRepository import FuncionarioRepository
+from db import db
+import config
+from repository.PratoRepository import *
+from repository.FuncionarioRepository import *
 from controller import prato_controllers
 from models.model import db, Prato, Funcionario
 #importa db, Prato e Funcionario do arquivo model
 
 app = Flask(__name__)
 app.register_blueprint(prato_controllers)
+app.config.from_object(config)
 
 pratoRepository=PratoRepository()
 funcionarioRepository = FuncionarioRepository()
 app.secret_key = 'sua_chave_secreta_aqui' 
 
-db = SQLAlchemy()
-
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'  # Exemplo usando SQLite
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+db.init_app(app)
 
 pratos_iniciais = [ #pratos pré-adicionados no banco de dados
     {"id": 1, "nome": "Carne Argentina", "descricao": "Prato suculento e macio, preparado com cortes selecionados e temperos especiais, para uma experiência saborosa e intensa.", "preco": 89.00, "imagem": "gallery5.jpg"},
