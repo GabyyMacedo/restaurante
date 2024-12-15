@@ -1,5 +1,5 @@
-from db import db
-from models.model import Prato, db
+from db import db #importa o db (banco de dados) do db.py
+from models.model import Prato #importa Prato do model.py
 
 class PratoDAO:
     @staticmethod
