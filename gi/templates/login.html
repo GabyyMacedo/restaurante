@@ -10,8 +10,8 @@
     <header class="header">
         <a href="#" class="logo"> <i class="fas fa-drumstick-bite"></i>Fogo & Brasa</a>
         <nav class="navbar">
-            <a href="home.html" class="active">home</a>
-            <a href="about.html">sobre</a>
+            <a href="{{ url_for('prato.index') }}">Home</a>
+            <a href="#">sobre</a>
             <a href="{{ url_for('prato.logout') }}">Logout</a>
             <a href="{{ url_for('prato.index') }}">Menu</a>
         </nav>

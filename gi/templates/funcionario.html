@@ -29,20 +29,21 @@
                     <tr>
                         <th>ID</th>
                         <th>Nome</th>
+                        <th>Descrição</th>
                         <th>Imagem</th>
                         <th>Ações</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {% for prato in listapratos %}
+                    {% for prato in prato %} 
                         <tr>
                             <td>{{ prato.id }}</td>
                             <td>{{ prato.nome }}</td>
                             <td>{{ prato.descricao}}</td>
-                            <td>{{ prato.imagem }}</td>
+                            <td><img src="{{ url_for('static', filename='images/' + prato.imagem) }}" alt="{{ prato.nome }}"></td>
                             <td>
                                 <br>
-                                <form action="{{ url_for('prato.remove_prato', id=prato.id) }}" method="post" >
+                                <form action="{{ url_for('prato.remover_prato', id=prato.id) }}" method="post" >
                                     <button type="submit">Remover</button>
                                 </form>
                             </td>
@@ -53,7 +54,7 @@
         </section>
         <section>
             <h2>Adicionar Novo Prato</h2>
-            <form action="{{ url_for('prato.add_prato') }}" method="post" class="book-form">
+            <form action="{{ url_for('prato.add_prato') }}" method="post" class="book-form" enctype="multipart/form-data">
                 <div class="flex">
                     <div class="inputBox">
                         <input type="text" name="nome" placeholder="Nome:" required>
@@ -63,11 +64,11 @@
                         </div>
                         <div class="flex">
                             <div class="inputBox">
-                                <input type="text" name="imagem" placeholder="Descrição:" required>
+                                <input type="text" name="descricao" placeholder="Descrição:" required>
                             </div>
                             <div class="flex">
                                 <div class="inputBox">
-                                    <input type="text" name="descricao" placeholder="Imagem:" required>
+                                    <input type="text" name="imagem" placeholder="Imagem:" required>
                                 </div>
                         <input type="submit" value="Adicionar" class="btn">
             </form>

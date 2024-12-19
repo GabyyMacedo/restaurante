@@ -30,6 +30,9 @@
                         <th>ID</th>
                         <th>Nome</th>
                         <th>Cargo</th>
+                        <th>Email</th>
+                        <th>CPF</th>
+                        <th>Salario</th>
                         <th>Ações</th>
                     </tr>
                 </thead>
@@ -39,6 +42,9 @@
                             <td>{{ funcionario.id }}</td>
                             <td>{{ funcionario.nome }}</td>
                             <td>{{ funcionario.cargo }}</td>
+                            <td>{{ funcionario.email }}</td>
+                            <td>{{ funcionario.cpf }}</td>
+                            <td>{{ funcionario.salario }}</td>
                             <td>
                                 <br>
                                 <form action="{{ url_for('prato.remover_funcionario', id=funcionario.id) }}" method="post" >
@@ -61,7 +67,17 @@
                         <div class="inputBox">
                             <input type="text" name="cargo" placeholder="Cargo:" required>
                         </div>
+                        <div class="inputBox">
+                            <input type="number" name="cpf" placeholder="CPF:" required>
+                        </div>
                 
+                        <div class="inputBox">
+                            <input type="email" name="email" placeholder="Email:" required>
+                        </div>
+                        <div class="inputBox">
+                            <input type="text" name="salario" placeholder="Salario:" required>
+                        </div>
+            
                         <input type="submit" value="Adicionar" class="btn">
             </form>
         </section>
