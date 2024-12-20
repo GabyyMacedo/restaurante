@@ -2,145 +2,145 @@ from flask import Blueprint, render_template, request, redirect, url_for, sessio
 from models.model import db, Prato , Funcionario, autenticar #importa o banco de dados, Prato, Funcionario e autenticar
 from repository import PratoRepository
 from repository import FuncionarioRepository
+from functools import wraps
 import json
 
-#cria um blueprint para pratos
+def login_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if 'username' not in session:
+            flash("Você precisa estar logado para acessar esta página.", 'danger')
+            return redirect(url_for('prato.login'))
+        return f(*args, **kwargs)
+    return decorated_function
+
+# Criando o Blueprint e instanciando os repositórios
 prato_controllers = Blueprint("prato", __name__)
-pratoRepository = PratoRepository()#repositorio para manipular os dados do prato
-funcionarioRepository = FuncionarioRepository()#repositorio pra funcionários
-#middleware antes da requisição
+pratoRepository = PratoRepository()
+funcionarioRepository = FuncionarioRepository()
+
 @prato_controllers.before_request
 def before_request():
-    #metodo e caminho de cada requisição
     print(f"Método da Requisição: {request.method} | Caminho da Requisição: {request.path}")
-#middleware depois da requisição
+
 @prato_controllers.after_request
-#cookie para saber se a pagina ja foi visitada antes
 def after_request(response):
-    response.set_cookie('visited', 'true')
+    # Adicionando cabeçalhos para evitar cache nas páginas protegidas
+    if request.path.startswith('/user') or request.path.startswith('/funcionario') or request.path.startswith('/admin'):
+        response.headers['Cache-Control'] = 'no-store, no-cache, must-revalidate, proxy-revalidate'
+        response.headers['Pragma'] = 'no-cache'
+        response.headers['Expires'] = '0'
     return response
-#rota inicial
+
 @prato_controllers.route("/")
 def index():
-    listaPratos = Prato.query.all() #busca os pratos no banco
-    username = session.get('username') #recupera o usuario
-    visited = request.cookies.get('visited')#ve se ja foi visitado
+    listaPratos = Prato.query.all() 
+    username = session.get('username')
+    visited = request.cookies.get('visited')
     id = request.args.get('id', default=0, type=int)
-    cookie = json.loads(request.cookies.get('carrinho', '[]'))#cria um carrinho
-#adiciona ou tira os pratos do carrinho
+    cookie = json.loads(request.cookies.get('carrinho', '[]'))
+
     if id != 0:
         if id in cookie:
             cookie.remove(id)
         else:
             cookie.append(id)
 
-    # Renderiza a página e atualiza o carrinho no cookie
     resp = make_response(render_template("index.html", 
                                          listapratos=listaPratos, 
                                          carrinho=cookie))
-    #salva o carrinho
     resp.set_cookie('carrinho', json.dumps(cookie), max_age=60*60*24)
     return resp
-#rota para ir pra página sobre
+
 @prato_controllers.route("/sobre")
 def sobre():
-    return render_template("sobre.html")
+    return render_template("sobre.html"), 500
 
-#rota de login
-@prato_controllers.route("/login", methods=['GET', 'POST'])#get pra ver e post pra enviar os dados
+@prato_controllers.route("/login", methods=['GET', 'POST'])
 def login():
-    #pega os dados do forms html
     if request.method == 'POST':
         user = request.form['user']
         senha = request.form['senha']
         
-        autenticado = autenticar(user, senha)#verifica se tá certo
+        autenticado = autenticar(user, senha)
         if autenticado:
             session['username'] = user
-            flash(f'Bem-vindo, {autenticado}!', 'success')#mensagem de bem vindo
-            return redirect(url_for('prato.welcome'))#vai pra rota welcome
+            flash(f'Bem-vindo, {autenticado}!', 'success')
+            return redirect(url_for('prato.welcome'))
         else:
-            flash('Usuário ou senha inválidos.', 'danger') #não ta certo
-    return render_template('login.html')#volta pra fazer login dnv
+            flash('Usuário ou senha inválidos.', 'danger')  
+    return render_template('login.html')
 
-@prato_controllers.route("/welcome")#rota dps do login
+@prato_controllers.route("/welcome")
 def welcome():
-    username = session.get('username')#pega o nome do usuario
-    if username == "admin":#verifica se é admin
+    username = session.get('username')
+    if username == "admin":
         message = "Bem-vindo, ADMIN!"
-        return redirect(url_for('prato.listar_funcionarios'))#vai pra rota listar funcionário
-    elif username == "user":#verifica se é user
+        return redirect(url_for('prato.listar_funcionarios'))
+    elif username == "user":
         message = "Bem-vindo, USER!"
-        return redirect(url_for('prato.user',username=username, message=message))#vai pra rota user
+        return redirect(url_for('prato.user',username=username, message=message))
     else:
-     message = "Bem-vindo, FUNCIONÁRIO!"#so pode ser funcionario
-    return redirect(url_for('prato.listar_prato',username=username, message=message))#vai pra listar prato
-
+        message = "Bem-vindo, FUNCIONÁRIO!"
+    return redirect(url_for('prato.listar_prato',username=username, message=message))
 
 @prato_controllers.route("/user")
+@login_required
 def user():
-    # Obter o carrinho dos cookies
+    listaPratos = Prato.query.all()
     carrinho_ids = json.loads(request.cookies.get('carrinho', '[]'))
-    
-    # Filtrar os pratos que estão no carrinho com base no ID
-    pratos_no_carrinho = Prato.query.filter(Prato.id.in_(carrinho_ids)).all()
-    
-    # Calcular o preço total do carrinho
+
+    pratos_no_carrinho = [prato for prato in listaPratos if prato.id in carrinho_ids]
     total_carrinho = sum(prato.preco for prato in pratos_no_carrinho)
-    
-    # Renderizar a página do usuário com os pratos do carrinho e o total
-    return render_template("user.html", listaPratos=pratos_no_carrinho, total=total_carrinho, carrinho=carrinho_ids)
 
+    return render_template("user.html", listaPratos=pratos_no_carrinho, total=total_carrinho)
 
-# rota de funcionario
 @prato_controllers.route("/funcionario")
+@login_required
 def listar_prato():
-    prato = pratoRepository.get_all_pratos()  # busca todos os pratos no banco
+    prato = pratoRepository.get_all_pratos()
     return render_template("funcionario.html", prato=prato)
 
-
-# add um prato (usado no formulário de POST)
 @prato_controllers.route("/funcionario/add_prato", methods=["POST"])
+@login_required
 def add_prato():
-    # pega os dados do formulário
     nome = request.form["nome"]
     descricao = request.form["descricao"]
     preco = float(request.form["preco"])
     imagem = request.form["imagem"]
     
-    pratoRepository.add_prato(nome, descricao, preco, imagem)  # salva no banco
-    flash('Prato adicionado com sucesso!', 'success')  # mostra mensagem
-    return redirect(url_for('prato.index'))  # volta pra página inicial
+    pratoRepository.add_prato(nome, descricao, preco, imagem)
+    flash('Prato adicionado com sucesso!', 'success')
+    return redirect(url_for('prato.index'))
 
-# remove um prato 
-@prato_controllers.route("/funcionario/remover/<int:id>", methods=["POST"])
-def remover_prato(id):
-    pratoRepository.delete_prato(id)  # apaga do banco pelo ID
-    flash('Prato removido com sucesso!', 'success')  # mostra mensagem 
-    return redirect(url_for('prato.index'))  # volta pra página inicial
+@prato_controllers.route("/funcionario/remove_prato/<int:id>", methods=["POST"])
+@login_required
+def remove_prato(id):
+    pratoRepository.remove_prato(id)
+    flash('Prato removido com sucesso!', 'success')
+    return redirect(url_for('prato.index'))
+
 @prato_controllers.route("/admin")
+@login_required
 def listar_funcionarios():
-    funcionarios = funcionarioRepository.get_all_funcionarios()  # busca todos os funcionários
+    funcionarios = funcionarioRepository.get_all_funcionarios()
     return render_template("admin.html", funcionarios=funcionarios)
 
-# add um funcionário 
 @prato_controllers.route("/admin/funcionarios/adicionar", methods=["POST"])
+@login_required
 def add_funcionario():
-    nome = request.form["nome"]  # Nome do funcionário
-    cargo = request.form["cargo"] 
-    email = request.form["email"]  
-    cpf = request.form["cpf"]   # Cargo dele
-    salario = request.form["salario"]  
+    nome = request.form["nome"]
+    cargo = request.form["cargo"]
     
-    funcionarioRepository.add_funcionario(nome, cargo, email, cpf, salario)  # Salva no banco
-    flash('Funcionário adicionado com sucesso!', 'success')  # Mostra mensagem
+    funcionarioRepository.add_funcionario(nome, cargo)
+    flash('Funcionário adicionado com sucesso!', 'success')
     return redirect(url_for('prato.listar_funcionarios'))
 
-# remove um funcionário 
 @prato_controllers.route("/admin/funcionarios/remover/<int:id>", methods=["POST"])
+@login_required
 def remover_funcionario(id):
-    funcionarioRepository.remove_funcionario(id)  # apaga pelo ID
-    flash('Funcionário removido com sucesso!', 'success')  # Mostra msg
+    funcionarioRepository.remove_funcionario(id)
+    flash('Funcionário removido com sucesso!', 'success')
     return redirect(url_for('prato.listar_funcionarios'))
 
 @prato_controllers.route("/logout")
@@ -149,18 +149,20 @@ def logout():
     flash('Você foi desconectado.', 'info')
     return redirect(url_for('prato.login'))
 
-@prato_controllers.errorhandler(404)
+@prato_controllers.app_errorhandler(404)
 def notFound(e):
     return render_template("404.html"), 404
 
-@prato_controllers.errorhandler(403)
-def forbidden(e):
+@prato_controllers.app_errorhandler(403)
+def notFound(e):
     return render_template("403.html"), 403
 
-@prato_controllers.errorhandler(401)
-def unauthorized(e):
-    return render_template("401.html"), 401
 
-@prato_controllers.errorhandler(500)
-def serverError(e):
-    return render_template("500.html"), 500
+@prato_controllers.app_errorhandler(401)
+def notFound(e):
+    return render_template("404.html"), 401
+
+
+@prato_controllers.app_errorhandler(500)
+def notFound(e):
+    return render_template("404.html"), 500
