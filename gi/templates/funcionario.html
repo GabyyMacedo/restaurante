@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestão de Funcionários</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <header class="header">
+        <a href="#" class="logo"> <i class="fas fa-drumstick-bite"></i>Fogo & Brasa</a>
+        <nav class="navbar">
+            <a href="home.html" class="active">home</a>
+            <a href="about.html">sobre</a>
+            <a href="{{ url_for('prato.logout') }}">Logout</a>
+            <a href="{{ url_for('prato.index') }}">Menu</a>
+        </nav>
+        <div id="menu" class="fas fa-bars"></div>
+    </header>
+<br>
+<br>
+<br>
+<br>
+    <main>
+          <section class="booking">
+            <h2>Lista de Pratos</h2>
+            <table class="employee-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nome</th>
+                        <th>Descrição</th>
+                        <th>Imagem</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for prato in prato %} 
+                        <tr>
+                            <td>{{ prato.id }}</td>
+                            <td>{{ prato.nome }}</td>
+                            <td>{{ prato.descricao}}</td>
+                            <td><img src="{{ url_for('static', filename='images/' + prato.imagem) }}" alt="{{ prato.nome }}"></td>
+                            <td>
+                                <br>
+                                <form action="{{ url_for('prato.remover_prato', id=prato.id) }}" method="post" >
+                                    <button type="submit">Remover</button>
+                                </form>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </section>
+        <section>
+            <h2>Adicionar Novo Prato</h2>
+            <form action="{{ url_for('prato.add_prato') }}" method="post" class="book-form" enctype="multipart/form-data">
+                <div class="flex">
+                    <div class="inputBox">
+                        <input type="text" name="nome" placeholder="Nome:" required>
+                    </div>
+                        <div class="inputBox">
+                            <input type="text" name="preco" placeholder="Preço:" required>
+                        </div>
+                        <div class="flex">
+                            <div class="inputBox">
+                                <input type="text" name="descricao" placeholder="Descrição:" required>
+                            </div>
+                            <div class="flex">
+                                <div class="inputBox">
+                                    <input type="text" name="imagem" placeholder="Imagem:" required>
+                                </div>
+                        <input type="submit" value="Adicionar" class="btn">
+            </form>
+        </section>
+    </main>
+</body>
+</html>
